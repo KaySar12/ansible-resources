@@ -1,0 +1,14 @@
+dev:
+    hosts:
+        10.1.1.10:
+nextdomain:
+    hosts:
+        10.0.0.66:
+        10.0.0.61:
+        10.0.0.62:    
+local:
+    hosts:
+        localhost:
+test:
+    children:
+        dev:
