@@ -1,0 +1,9 @@
+dev:
+    hosts:
+        10.1.1.10:
+nextdomain:
+    hosts:
+        10.0.0.66:  
+test:
+    children:
+        dev:
