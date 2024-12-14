@@ -1,0 +1,22 @@
+---
+- hosts: node
+  become: true
+  tasks:
+    - name: Install Nginx
+      ansible.builtin.package:
+        name: nginx
+    - name: Install Micro
+      ansible.builtin.package:
+        name: micro
+    - name: Install htop
+      ansible.builtin.package:
+        name: htop
+    - name: Install neofetch
+      ansible.builtin.package:
+        name: neofetch
+    - name: Run script install lazydocker
+      ansible.builtin.script: /scripts/install-lazydocker.sh
+    - name: Run script install casaos
+      ansible.builtin.shell: curl -fsSL https://get.icewhale.io/casaos.sh | bash
+      
+      
