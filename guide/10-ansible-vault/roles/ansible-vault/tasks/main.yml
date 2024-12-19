@@ -1,0 +1,4 @@
+---
+- name: Show vault variable value
+  ansible.builtin.debug:
+    var: my_message_var

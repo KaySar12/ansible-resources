@@ -4,5 +4,4 @@
   become: true
   remote_user: root
   roles:
-    - custom-role
     - install-lighttpd

@@ -1,0 +1,7 @@
+---
+- name: Installing packages for python env
+  become: true
+  ansible.builtin.apt:
+    name:
+      - python3-pip
+    update_cache: true

@@ -1,0 +1,31 @@
+---
+# 1. ignore_errors - Ignoring the error
+- name: Copy index.html  with ignore_error
+  ansible.builtin.template:
+    src: index.html
+    dest: /home/ubuntu
+    mode: '0755'
+  register: copy_result
+  ignore_errors: true
+
+- name: String Variable from - main_playbook_variable
+  ansible.builtin.debug:
+    var: copy_result
+
+
+# 2. any_errors_fatal
+- name: Copy index.html  with failed_when
+  ansible.builtin.template:
+    src: index.html
+    dest: /home/ubuntu
+    mode: '0755'
+  failed_when:
+    - '"Could not find or access" not in copy_result.msg'
+    - copy_result.failed == true
+  any_errors_fatal: false
+#
+#
+- name: Create a file if it does not exist
+  ansible.builtin.command: touch /home/ubuntu/myfile.txt
+  register: file_created
+  changed_when: file_created.rc == 0
