@@ -1,0 +1,9 @@
+---
+- name: Install required packages
+  ansible.builtin.apt:
+    name:
+      - nginx
+      - git
+      - curl
+    state: present
+    update_cache: true

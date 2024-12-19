@@ -1,9 +1,10 @@
 BASE_DIR=/root/dev/Ansible/ansible-resources/guide
-FIRST_DEMO=1-ansible-first-demo
-HANDLERS=2-ansible-handlers
-VARIABLES=3-ansible-variables
-ENV=4-ansible-environment-variable
+FIRST_DEMO	=1-ansible-first-demo
+HANDLERS	=2-ansible-handlers
+VARIABLES	=3-ansible-variables
+ENV			=4-ansible-environment-variable
 CONDITIONALS=5-ansible-conditionals
+IMPORT_ROLES=6-ansible-import-roles
 ansible-first-demo:
 	@ansible-playbook --inventory ${BASE_DIR}/${FIRST_DEMO}/inventory/vm-setup-playbook/hosts.ini ${BASE_DIR}/${FIRST_DEMO}/vm-setup-playbook.yml --list-tasks
 ansible-handlers:
@@ -34,3 +35,10 @@ ansible-env-variables:
 
 ansible-conditionals:
 	@ansible-playbook -v  --inventory ${BASE_DIR}/${CONDITIONALS}/inventory/ansible-conditionals/hosts.ini ${BASE_DIR}/${CONDITIONALS}/ansible-conditionals-playbook.yml
+
+##############################
+#Ansible Import Roles
+##############################
+
+ansible-import-roles:
+	@ansible-playbook -v  --inventory ${BASE_DIR}/${IMPORT_ROLES}/inventory/ansible-import-roles/hosts.ini ${BASE_DIR}/${IMPORT_ROLES}/ansible-import-roles-playbook.yml

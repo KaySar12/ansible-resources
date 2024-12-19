@@ -1,0 +1,6 @@
+---
+- name: Set message file
+  ansible.builtin.copy:
+    content: "{{ message }}"
+    dest: /var/www/html/index.nginx-debian.html
+    mode: "0755"

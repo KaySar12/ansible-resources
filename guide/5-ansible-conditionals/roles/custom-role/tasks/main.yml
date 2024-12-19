@@ -2,7 +2,7 @@
 - name: Install Apache web server
   ansible.builtin.package:
     name: "{{ item }}"
-    state: present
+    state: absent # present
   loop: "{{ packages_to_install }}"
   when: install_flag
 - name: Combine conditions using ansible facts

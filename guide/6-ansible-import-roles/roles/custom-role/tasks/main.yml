@@ -1,0 +1,9 @@
+---
+- name: Import Package Tasks
+  ansible.builtin.import_tasks: packages.yml
+- name: Import Message Tasks
+  ansible.builtin.import_tasks: message.yml
+- name: Start nginx service
+  ansible.builtin.service:
+    name: nginx
+    state: started
