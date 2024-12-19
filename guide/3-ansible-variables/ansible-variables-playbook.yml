@@ -2,7 +2,7 @@
 - name: Example Ansible playbook for all kind of Variable
   hosts: all
   become: true
-  remote_user: nextzen
+  remote_user: root
   roles:
     - custom-role
 

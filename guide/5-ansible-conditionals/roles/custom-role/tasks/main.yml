@@ -1,10 +1,10 @@
 ---
 - name: Install Apache web server
-  ansible.builtin.apt:
-    name:
-      - apache2
-    state: absent
-  when: install_apache_flag
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ packages_to_install }}"
+  when: install_flag
 - name: Combine conditions using ansible facts
   ansible.builtin.debug:
     var: ansible_facts['kernel_version']

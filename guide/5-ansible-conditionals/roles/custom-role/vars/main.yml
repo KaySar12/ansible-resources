@@ -1,2 +1,6 @@
 ---
-install_apache_flag: false
+install_flag: true
+packages_to_install:
+  - apache2
+  - git
+  - sqlite3
