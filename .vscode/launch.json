@@ -1,0 +1,32 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Guide:Ansible Handlers",
+            "type": "ansible",
+            "request": "launch",
+            "playbook": "${workspaceFolder}/guide/ansible-handlers/vm-setup-playbook.yml",
+            "cwd": "${cwd}",
+            "args":[
+                "-v",
+                "--inventory",
+                "${workspaceFolder}/guide/ansible-handlers/inventory/vm-setup-playbook/hosts.ini"
+            ]
+        },
+        {
+            "name": "Guide:Ansible Variables",
+            "type": "ansible",
+            "request": "launch",
+            "playbook": "${workspaceFolder}/guide/ansible-variables/ansible-variables-playbook.yml",
+            "cwd": "${cwd}",
+            "args":[
+                "-v",
+                "--inventory",
+                "${workspaceFolder}/guide/ansible-variables/inventory/ansible-variables-playbook/hosts.ini"
+            ]
+        },
+    ]
+}

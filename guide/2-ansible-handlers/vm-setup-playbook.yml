@@ -1,0 +1,13 @@
+---
+- name: Example Ansible playbook
+  hosts: all
+  remote_user: nextzen
+  roles:
+    - handlers
+  handlers:
+    - name: Restart Nginx
+      ansible.builtin.service:
+        name: nginx
+        state: restarted
+      become: true
+      become_user: root

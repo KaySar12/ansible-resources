@@ -1,0 +1,48 @@
+---
+- name: Install Apache web server
+  ansible.builtin.apt:
+    name:
+      - apache2
+    state: absent
+  when: install_apache_flag
+- name: Combine conditions using ansible facts
+  ansible.builtin.debug:
+    var: ansible_facts['kernel_version']
+  when:
+    - ansible_facts['os_family'] == "Debian"
+    - ansible_facts['distribution_major_version'] == "12"
+## Setting complex condition
+- name: Setting complex condition
+  ansible.builtin.debug:
+    var: ansible_facts['kernel_version']
+  when: ansible_facts['os_family'] == "Debian" and ansible_facts['distribution_major_version'] | int >= 20
+## Register a variables and evaluate the value using when condition
+- name: Register a variable
+  ansible.builtin.command: cat /root/test-file.txt
+  register: test_file_content
+  tags:
+    - skip_ansible_lint
+- name: Use the variable in conditional statement
+  ansible.builtin.debug:
+    var: test_file_content.stdout
+  when: test_file_content.stdout.find('hi') != -1
+## When with Loop
+- name: Run with items greater than 5
+  ansible.builtin.command: echo {{ item }}
+  loop: [0, 2, 4, 6, 8, 10]
+  when: item > 5
+  register: list
+  tags:
+    - skip_ansible_lint
+- name: Print with loop
+  ansible.builtin.debug:
+    var: item.stdout
+  loop: "{{ list.results }}"
+## Conditionals based on ansible_facts
+- name: How to use ansible_facts
+  ansible.builtin.debug:
+    # var: ansible_facts['distribution']
+    # var: ansible_facts['distribution_major_version']
+    # var: ansible_facts['kernel_version']
+    var: ansible_facts
+  # when: ansible_facts['os_family'] == "Debian"

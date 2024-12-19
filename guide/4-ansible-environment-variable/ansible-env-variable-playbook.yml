@@ -1,0 +1,35 @@
+---
+- name: Example Ansible playbook for environment variable
+  hosts: all
+  become: true
+  remote_user: nextzen
+  roles:
+    - custom-role
+  environment:
+    EXAMPLE: "Foo bar"
+    MY_VAR1: "variable value1"
+
+  tasks:
+    - name: Environment var at Playbook Level
+      ansible.builtin.command: echo "$EXAMPLE"
+      register: example_env
+      tags:
+        - skip_ansible_lint
+    - name: Print Example ENV
+      ansible.builtin.debug:
+        var: example_env.stdout
+    - name: Environment var for only task Level
+      environment:
+        MY_TASK_LEVEL_VARIABLE: "Hello World!"
+      ansible.builtin.command: echo "$MY_TASK_LEVEL_VARIABLE"
+      tags:
+        - skip_ansible_lint
+
+    - name: Testing both playbook level as well as environment level vars.
+      ansible.builtin.command: echo "$EXAMPLE $MY_VAR1 $MY_TASK_LEVEL_VARIABLE "
+      register: results
+      tags:
+        - skip_ansible_lint
+    - name: Print
+      ansible.builtin.debug:
+        var: results.stdout

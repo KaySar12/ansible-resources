@@ -1,0 +1,26 @@
+---
+- name: Update apt cache and install Nginx
+  ansible.builtin.apt:
+    name:
+      - nginx
+    update_cache: true
+  become: true
+  become_user: root
+- name: Copy index.html
+  ansible.builtin.template:
+    src: index.html
+    dest: /var/www/html/index.html
+    mode: '0755'
+  become: true
+  become_user: root
+
+
+- name: Copy updated.html
+  ansible.builtin.template:
+    src: updated.html
+    dest: /var/www/html/index.html
+    mode: '0755'
+  become: true
+  become_user: root
+  notify:
+    - Restart Nginx
