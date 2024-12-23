@@ -1,0 +1,23 @@
+# file: ansidock/dependencies.yml
+---
+- name: Postgres database
+  hosts: dockerhost
+  vars:
+    image: "{{ postgres_image }}"
+    image_tag: "{{ postgres_version }}"
+    container_name: "{{ postgres_container_name }}"
+    container_env: "{{ postgres_env }}"
+    container_ports: "{{ postgres_ports }}"
+    container_host_group: postgres
+  roles:
+    - container
+
+- name: Redis cache
+  hosts: dockerhost
+  vars:
+    image: "{{ redis_image }}"
+    image_tag: "{{ redis_version }}"
+    container_name: "{{ redis_container_name }}"
+    container_host_group: redis
+  roles:
+    - container

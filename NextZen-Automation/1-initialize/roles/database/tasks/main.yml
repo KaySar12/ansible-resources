@@ -1,0 +1,27 @@
+---
+- name: Install Ansible (Debian/Ubuntu)
+  ansible.builtin.apt:
+    name: ansible
+    state: present
+    update_cache: true
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+- name: Initialize nextzen folder structure
+  become: true
+  ansible.builtin.copy:
+    src: "{{ resource_base_dir }}/database"
+    dest: /home/nextzen
+    owner: nextzen
+    group: nextzen
+    mode: '0644'
+- name: Create groups
+  ansible.builtin.group:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ grouplist }}"
+- name: Create users
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    groups: "{{ item.groups }}"
+    shell: "{{ item.shell }}"
+    state: present
+  with_items: "{{ userlist }}"

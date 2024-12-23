@@ -1,0 +1,34 @@
+---
+grouplist:
+  - nextzen-global
+  - nextzen-cloud
+  - nextzen-apps
+  - nextfirewall
+  - nextweb
+  - accountcenter
+  - admin
+  - nextvpn
+  - nextdns
+  - nextnas
+userlist:
+    - name: accountcenter
+      groups: "nextzen-global,nextzen-cloud,accountcenter" 
+      shell: /bin/bash
+    - name: nextweb
+      groups: "nextweb,nextzen-global"
+      shell: /bin/bash
+    - name: nextdns
+      groups: "nextdns,nextzen-global"
+      shell: /bin/bash
+    - name: nextnas
+      groups: "nextnas,nextzen-global" 
+      shell: /bin/bash
+    - name: nextvpn
+      groups: "nextvpn,nextzen-global"
+      shell: /bin/bash 
+    - name: nextfirewall
+      groups: "nextfirewall,nextzen-global"
+      shell: /bin/bash 
+    - name: nextzen-admin
+      groups: "admin,nextzen-global"
+      shell: /bin/bash 

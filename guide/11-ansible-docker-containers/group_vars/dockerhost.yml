@@ -1,0 +1,13 @@
+---
+postgres_image: postgres
+postgres_version: 15-alpine
+postgres_container_name: ansidock_db
+postgres_ports:
+  - 8765:5432
+postgres_env:
+  POSTGRES_PASSWORD: password
+  POSTGRES_USER: postgres
+  POSTGRES_DB: ansidock
+redis_image: redis
+redis_version: alpine
+redis_container_name: ansidock_redis

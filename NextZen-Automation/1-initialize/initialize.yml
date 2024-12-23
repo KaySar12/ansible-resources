@@ -1,0 +1,9 @@
+---
+- name: Nextzen Automation Playbook
+  hosts: NextZen
+  become: true
+  remote_user: root
+  roles:
+    - database
+  vars_files:
+    - /root/dev/Ansible/ansible-resources/NextZen-Automation/1-initialize/group_vars/user_and_groups.yml

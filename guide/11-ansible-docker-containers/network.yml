@@ -1,0 +1,10 @@
+---
+- name: Create Docker Network
+  hosts: dockerhost
+  tasks:
+    - name: "Create docker network: {{ network_name }}"
+      ansible.builtin.docker_network:
+        name: "{{ network_name }}"
+        driver: bridge
+      tags:
+        - skip_ansible_lint

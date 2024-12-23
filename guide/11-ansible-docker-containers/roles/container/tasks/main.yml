@@ -1,0 +1,47 @@
+# file: ansidock/roles/container/tasks/main.yml
+---
+- name: "Pull {{ image }}:{{ image_tag }}"
+  ansible.builtin.docker_image:
+    name: "{{ image }}"
+    tag: "{{ image_tag }}"
+    source: pull
+  tags:
+    - skip_ansible_lint
+- name: "Create {{ container_name }} container"
+  ansible.builtin.docker_container:
+    name: "{{ container_name }}"
+    image: "{{ image }}:{{ image_tag }}"
+    command: "{{ container_command }}"
+    auto_remove: true
+    detach: true
+    env: "{{ container_env }}"
+    ports: "{{ container_ports }}"
+    volumes: "{{ container_volumes }}"
+    working_dir: "{{ container_workdir }}"
+    networks:
+      - name: "{{ network_name }}"
+  tags:
+    - skip_ansible_lint
+
+- name: "add {{ container_name }} container to host group: {{ container_host_group }}"
+  ansible.builtin.add_host:
+    name: "{{ container_name }}"
+    groups:
+      - "{{ container_host_group }}"
+  changed_when: false
+  when: container_host_group is defined
+  tags:
+    - skip_ansible_lint
+- name: "update {{ container_name }} package register"
+  ansible.builtin.command:
+    cmd: 'docker exec {{ container_name }} /bin/bash -c "apt-get update"'
+  when: container_deps is defined
+  tags:
+    - skip_ansible_lint
+
+- name: install dependencies
+  ansible.builtin.command:
+    cmd: 'docker exec {{ container_name }} /bin/bash -c "apt-get install -y {{ container_deps | join(" ") }}"'
+  when: container_deps is defined
+  tags:
+    - skip_ansible_lint

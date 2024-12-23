@@ -3,7 +3,7 @@
 - name: Copy index.html  with ignore_error
   ansible.builtin.template:
     src: index.html
-    dest: /home/ubuntu
+    dest: /home/nextzen
     mode: '0755'
   register: copy_result
   ignore_errors: true
@@ -17,15 +17,16 @@
 - name: Copy index.html  with failed_when
   ansible.builtin.template:
     src: index.html
-    dest: /home/ubuntu
+    dest: /home/nextzen
     mode: '0755'
-  failed_when:
-    - '"Could not find or access" not in copy_result.msg'
-    - copy_result.failed == true
-  any_errors_fatal: false
+  # failed_when:
+  #   - copy_result.failed == true
+  # any_errors_fatal: true
+  register: copy_result
+  ignore_errors: true
 #
 #
 - name: Create a file if it does not exist
-  ansible.builtin.command: touch /home/ubuntu/myfile.txt
+  ansible.builtin.command: touch /home/nextzen/myfile.txt
   register: file_created
   changed_when: file_created.rc == 0

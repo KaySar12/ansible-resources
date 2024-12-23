@@ -1,0 +1,5 @@
+---
+network_name: ansidocknet
+app_dir: /app/ansidock
+app_ruby_version: 3.2.1
+app_bundler_version: 2.4.6
