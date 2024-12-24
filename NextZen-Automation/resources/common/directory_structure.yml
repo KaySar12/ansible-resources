@@ -1,0 +1,46 @@
+---
+directories:
+    - path: database
+      owner: nextzen
+      group: nextzen
+      mode: "0755"
+    - path: database/apps
+      owner: nextzen
+      group: nextzen
+      mode: "0755"
+    - path: database/apps/AccountCenter
+      owner: accountcenter
+      group: accountcenter  
+      mode: "0750"  
+    - path: database/apps/NextDNS
+      owner: nextdns
+      group: nextdns   
+      mode: "0750"
+    - path: database/apps/NextFireWall
+      owner: nextfirewall
+      group: nextfirewall 
+      mode: "0750"  
+    - path: database/apps/NextVPN
+      owner: nextvpn
+      group: nextvpn   
+      mode: "0750"
+    - path: database/apps/NextWeb
+      owner: nextweb
+      group: nextweb  
+      mode: "0750" 
+    - path: database/apps/NextZenOS 
+      owner: nextzen-admin
+      group: nextzen-admin  
+      mode: "0750" 
+    - path: database/cloud
+      owner: nextzen
+      group: nextzen   
+      mode: "0750"
+    - path: database/global
+      owner: nextzen
+      group: nextzen
+      mode: "0750"     
+    - path: database/template
+      owner: nextzen
+      group: nextzen   
+      mode: "0750"

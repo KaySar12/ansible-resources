@@ -6,4 +6,6 @@
   roles:
     - database
   vars_files:
-    - /root/dev/Ansible/ansible-resources/NextZen-Automation/1-initialize/group_vars/user_and_groups.yml
+    - roles/database/vars/user_and_groups.yml
+    - ../resources/common/default.yml
+    - ../resources/common/directory_structure.yml

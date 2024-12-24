@@ -1,27 +1,42 @@
 ---
-- name: Install Ansible (Debian/Ubuntu)
+###########################################################################
+- name: Install Access Control List
   ansible.builtin.apt:
-    name: ansible
+    name: acl
     state: present
     update_cache: true
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+############################################################################
 - name: Initialize nextzen folder structure
   become: true
   ansible.builtin.copy:
     src: "{{ resource_base_dir }}/database"
-    dest: /home/nextzen
-    owner: nextzen
-    group: nextzen
+    dest: "{{ database_dest }}"
+    owner: "{{ default_owner }}"
+    group: "{{ default_group }}"
     mode: '0644'
+#################################
 - name: Create groups
   ansible.builtin.group:
     name: "{{ item }}"
     state: present
-  with_items: "{{ grouplist }}"
+  with_items: "{{ database_groups }}"
+################################
 - name: Create users
   ansible.builtin.user:
     name: "{{ item.name }}"
     groups: "{{ item.groups }}"
     shell: "{{ item.shell }}"
     state: present
-  with_items: "{{ userlist }}"
+  with_items: "{{ database_users }}"
+#################################
+- name: Configure directory permission
+  ansible.builtin.file:
+    path: "{{ database_dest }}/{{ item.path }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: "{{ item.mode }}"
+    state: directory
+    recurse: true
+  with_items: "{{ directories }}"
+###############################################
