@@ -5,8 +5,10 @@
   remote_user: root
   roles:
     # - database
-    - outpost
+    # - outpost
     # - account-center
+    # - nextweb
+    - config
   vars_files:
     - roles/database/vars/user_and_groups.yml
     - ../resources/common/default.yml

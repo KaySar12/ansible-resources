@@ -1,0 +1,85 @@
+---
+- name: Login to outpost
+  ansible.builtin.uri:
+    url: http://10.0.0.69/api/auth/login
+    method: POST
+    body_format: json
+    body:
+      auth: "{{ outpost_app_user }}"
+      password: "{{ outpost_app_pass }}"
+    status_code: 204
+  register: login
+- name: Get Cookie
+  ansible.builtin.debug:
+    var: "{{ login.cookies_string }}"
+- name: Get Host Ip
+  ansible.builtin.debug:
+    var: hostvars[inventory_hostname].ansible_default_ipv4.address
+- name: Get projects
+  ansible.builtin.uri:
+    url: "http://{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}/api/projects"
+    method: GET
+    return_content: true
+    headers:
+      Cookie: "{{ login.cookies_string }}"
+  register: project_list
+- name: Get users
+  ansible.builtin.uri:
+    url: "http://{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}/api/users"
+    method: GET
+    return_content: true
+    headers:
+      Cookie: "{{ login.cookies_string }}"
+  register: user_list
+- name: Create Projects
+  ansible.builtin.uri:
+    url: "http://{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}/api/projects"
+    method: POST
+    body_format: json
+    body:
+      name: "{{ item }}"
+    headers:
+      Cookie: "{{ login.cookies_string }}"
+    status_code: 201
+  loop: "{{ default_apps }}"
+  when:
+    - project_list.json | map(attribute='name') | list is defined
+    - item not in project_list.json | map(attribute='name') | list
+# - name: Delete Projects
+#   ansible.builtin.uri:
+#     url: "http://{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}/api/project/{{ item.id }}"
+#     method: DELETE
+#     return_content: false
+#     headers:
+#       Cookie: "{{ login.cookies_string }}"
+#     status_code: 204
+#   loop: "{{ project_list.json }}"
+- name: Create Users
+  ansible.builtin.uri:
+    url: "http://{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}/api/users"
+    method: POST
+    body_format: json
+    body:
+      name: "{{ item }}"
+      username: "{{ item }}"
+      email: "{{ item }}@gmail.com"
+      password: "{{ item }}"
+      alert: false
+      admin: false
+      external: false
+    headers:
+      Cookie: "{{ login.cookies_string }}"
+    status_code: 201
+  loop: "{{ default_apps }}"
+  when:
+    - user_list.json | map(attribute='name') | list is defined
+    - item not in project_list.json | map(attribute='name') | list
+# - name: Delete Users
+#   ansible.builtin.uri:
+#     url: "http://{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}/api/user/{{ item.id }}"
+#     method: DELETE
+#     return_content: false
+#     headers:
+#       Cookie: "{{ login.cookies_string }}"
+#     status_code: 204
+#   loop: "{{ user_list.json }}"

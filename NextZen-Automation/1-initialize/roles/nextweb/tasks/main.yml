@@ -1,0 +1,44 @@
+---
+- name: Initialize Account center folder
+  become: true
+  ansible.builtin.copy:
+    src: "{{ resource_base_dir }}/docker/nextweb"
+    dest: "{{ database_dest }}"
+    owner: "{{ default_owner }}"
+    group: "{{ default_group }}"
+    mode: '0755'
+##############################################################
+- name: Log into private registry and force re-authorization
+  community.docker.docker_login:
+    registry: hub.nextzenos.com
+    username: "{{ docker_username }}"
+    password: "{{ docker_pass }}"
+    reauthorize: true
+##############################################################
+- name: Check if the image already exists
+  community.docker.docker_image_info:
+    name: "{{ item }}"
+  register: image_info
+  with_items: "{{ nextweb_images }}"
+##############################################################
+- name: Pull Image if not Exists
+  community.docker.docker_image:
+    name: "{{ item }}"
+    state: present
+    source: pull
+  when: image_info.results | selectattr('item', 'contains', item) | length > 0
+  with_items: "{{ nextweb_images }}"
+##############################################################
+- name: Tear down existing services
+  community.docker.docker_compose_v2:
+    project_src: "{{ database_dest }}/nextweb"
+    state: absent
+##############################################################
+- name: Start NextWeb Services
+  community.docker.docker_compose_v2:
+    project_src: "{{ database_dest }}/nextweb"
+  register: output
+##############################################################
+- name: Show results
+  ansible.builtin.debug:
+    var: output

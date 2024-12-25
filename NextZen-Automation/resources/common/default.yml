@@ -2,3 +2,11 @@
 database_dest: /home/nextzen
 default_owner: nextzen
 default_group: nextzen
+default_apps:
+  - account_center
+  - nextweb
+  - nextdns
+  - nextvpn
+  - nextnas
+  - nextzenos
+  - nextfirewall
