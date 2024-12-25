@@ -1,0 +1,3 @@
+---
+exclude_paths:
+  - /root/dev/Ansible/ansible-resources/NextZen-Automation/resources/docker/account-center/credential.yml

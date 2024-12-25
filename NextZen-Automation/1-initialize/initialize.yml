@@ -5,11 +5,10 @@
   remote_user: root
   roles:
     # - database
-    # - outpost
-    - account-center
+    - outpost
+    # - account-center
   vars_files:
     - roles/database/vars/user_and_groups.yml
     - ../resources/common/default.yml
     - ../resources/common/docker.yml
     - ../resources/common/directory_structure.yml
-    - ../resources/docker/account-center/docker-cred.yml

@@ -4,3 +4,6 @@
     - docker.io/library/redis:alpine
     - docker.io/library/postgres:16-alpine
     - maxmindinc/geoipupdate:latest
+  outpost_images:
+    - mysql:8
+    - semaphoreui/semaphore:v2.10.43

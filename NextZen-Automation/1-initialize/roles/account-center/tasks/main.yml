@@ -54,14 +54,30 @@
   register: container_info
   loop: "{{ net_info.network.Containers.keys() }}"
 ##############################################################
-- name: Find containers with 'account-center' in their name
-  ansible.builtin.set_fact:
-    matching_containers: "{{ container_info.results | selectattr('container.Name', 'search', 'account-center-server-1') | list }}"
+- name: Show Container results
+  ansible.builtin.debug:
+    var: container_info
 ##############################################################
-- name: Wait for matching containers to be healthy
-  ansible.builtin.wait_for:
-    delay: 5
-    timeout: 60
+- name: Find containers with 'account-center-server' in their name
+  ansible.builtin.set_fact:
+    matching_containers: "{{ container_info.results | selectattr('container.Name', 'search', 'account-center-server') | list }}"
+##############################################################
+- name: Debug matching containers
+  ansible.builtin.debug:
+    var: matching_containers
+##############################################################
+- name: Wait for account-center-server containers to be healthy
+  community.docker.docker_container_info:
+    name: "{{ item.container.Name | regex_replace('^/', '') }}"
+  register: container_health
+  until: container_health.container.State.Health.Status == 'healthy'
   poll: 5
-  when: item.container.State.Health.Status != 'healthy'
+  retries: 10
   loop: "{{ matching_containers }}"
+  loop_control:
+    label: "{{ item.container.Name | regex_replace('^/', '') }}"
+##############################################################
+- name: Display container health status
+  ansible.builtin.debug:
+    msg: "Container {{ item.container.Name | regex_replace('^/', '') }} health status: {{ item.container.State.Health.Status }}"
+  loop: "{{ container_health.results }}"
