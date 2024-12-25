@@ -1,0 +1,19 @@
+services:
+    server:
+        volumes:
+            - geoip:/geoip
+    worker:
+        volumes:
+            - geoip:/geoip
+    geoipupdate:
+        image: "maxmindinc/geoipupdate:latest"
+        volumes:
+            - "./geoip:/usr/share/GeoIP"
+        environment:
+            GEOIPUPDATE_EDITION_IDS: "GeoLite2-City GeoLite2-ASN"
+            GEOIPUPDATE_FREQUENCY: "8"
+            GEOIPUPDATE_ACCOUNT_ID: "1087187"
+            GEOIPUPDATE_LICENSE_KEY: "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"
+volumes:
+    geoip:
+        driver: local

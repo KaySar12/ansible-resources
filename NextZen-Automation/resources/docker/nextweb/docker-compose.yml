@@ -1,0 +1,17 @@
+version: "3"
+services:
+  nextweb:
+    container_name: nextweb
+    restart: always
+    ports:
+      - ${PANEL_PORT}:10086
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
+      - /root:/root
+      - ${NEXTWEB_DIR}:/NextZen/Apps/Default/NextWeb
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
+    image: hub.nextzenos.com/nextweb/nextweb:${NEXTWEB_VERSION}
+    labels:
+      createdBy: "Apps"

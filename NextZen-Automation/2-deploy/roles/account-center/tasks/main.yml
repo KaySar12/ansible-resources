@@ -1,0 +1,19 @@
+---
+- name: Initialize Account center folder
+  become: true
+  ansible.builtin.copy:
+    src: "{{ resource_base_dir }}/docker/account-center"
+    dest: "{{ database_dest }}"
+    owner: "{{ default_owner }}"
+    group: "{{ default_group }}"
+    mode: '0755'
+- name: Pull outpost image
+  community.docker.docker_compose_v2_pull:
+    project_src: "{{ database_dest }}/docker/account-center"
+- name: Start Outpost Service
+  community.docker.docker_compose_v2:
+    project_src: "{{ database_dest }}/docker/account-center"
+  register: output
+- name: Show results
+  ansible.builtin.debug:
+    var: output

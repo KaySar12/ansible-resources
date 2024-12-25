@@ -1,0 +1,67 @@
+---
+- name: Initialize Account center folder
+  become: true
+  ansible.builtin.copy:
+    src: "{{ resource_base_dir }}/docker/account-center"
+    dest: "{{ database_dest }}"
+    owner: "{{ default_owner }}"
+    group: "{{ default_group }}"
+    mode: '0755'
+##############################################################
+- name: Log into private registry and force re-authorization
+  community.docker.docker_login:
+    registry: hub.nextzenos.com
+    username: "{{ docker_username }}"
+    password: "{{ docker_pass }}"
+    reauthorize: true
+##############################################################
+- name: Check if the image already exists
+  community.docker.docker_image_info:
+    name: "{{ item }}"
+  register: image_info
+  with_items: "{{ account_center_images }}"
+##############################################################
+- name: Pull Image if not Exists
+  community.docker.docker_image:
+    name: "{{ item }}"
+    state: present
+    source: pull
+  when: image_info.results | selectattr('item', 'contains', item) | length > 0
+  with_items: "{{ account_center_images }}"
+##############################################################
+- name: Tear down existing services
+  community.docker.docker_compose_v2:
+    project_src: "{{ database_dest }}/account-center"
+    state: absent
+##############################################################
+- name: Start Account Center Services
+  community.docker.docker_compose_v2:
+    project_src: "{{ database_dest }}/account-center"
+  register: output
+##############################################################
+- name: Show results
+  ansible.builtin.debug:
+    var: output
+##############################################################
+- name: Get network info
+  community.docker.docker_network_info:
+    name: "account-center_default"
+  register: net_info
+##############################################################
+- name: Get information about all containers
+  community.docker.docker_container_info:
+    name: "{{ item }}"
+  register: container_info
+  loop: "{{ net_info.network.Containers.keys() }}"
+##############################################################
+- name: Find containers with 'account-center' in their name
+  ansible.builtin.set_fact:
+    matching_containers: "{{ container_info.results | selectattr('container.Name', 'search', 'account-center-server-1') | list }}"
+##############################################################
+- name: Wait for matching containers to be healthy
+  ansible.builtin.wait_for:
+    delay: 5
+    timeout: 60
+  poll: 5
+  when: item.container.State.Health.Status != 'healthy'
+  loop: "{{ matching_containers }}"

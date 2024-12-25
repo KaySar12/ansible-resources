@@ -1,0 +1,6 @@
+---
+  account_center_images:
+    - hub.nextzenos.com/accountcenter/accountcenternextzen-official/account-center:1.0.1
+    - docker.io/library/redis:alpine
+    - docker.io/library/postgres:16-alpine
+    - maxmindinc/geoipupdate:latest
