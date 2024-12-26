@@ -3,7 +3,7 @@
   become: true
   ansible.builtin.copy:
     src: "{{ resource_base_dir }}/docker/account-center"
-    dest: "{{ database_dest }}"
+    dest: "{{ install_dest }}"
     owner: "{{ default_owner }}"
     group: "{{ default_group }}"
     mode: '0755'
@@ -31,12 +31,12 @@
 ##############################################################
 - name: Tear down existing services
   community.docker.docker_compose_v2:
-    project_src: "{{ database_dest }}/account-center"
+    project_src: "{{ install_dest }}/account-center"
     state: absent
 ##############################################################
 - name: Start Account Center Services
   community.docker.docker_compose_v2:
-    project_src: "{{ database_dest }}/account-center"
+    project_src: "{{ install_dest }}/account-center"
   register: output
 ##############################################################
 - name: Show results
@@ -71,8 +71,8 @@
     name: "{{ item.container.Name | regex_replace('^/', '') }}"
   register: container_health
   until: container_health.container.State.Health.Status == 'healthy'
-  poll: 5
-  retries: 10
+  poll: 30
+  retries: 5
   loop: "{{ matching_containers }}"
   loop_control:
     label: "{{ item.container.Name | regex_replace('^/', '') }}"

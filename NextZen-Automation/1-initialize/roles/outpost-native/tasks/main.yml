@@ -1,0 +1,52 @@
+---
+- name: Install Ansible (Debian/Ubuntu)
+  ansible.builtin.apt:
+    name: ansible
+    state: present
+    update_cache: true
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+- name: Initialize outpost folder
+  become: true
+  ansible.builtin.copy:
+    src: "{{ resource_base_dir }}/docker/outpost"
+    dest: "{{ install_dest }}"
+    owner: "{{ default_owner }}"
+    group: "{{ default_group }}"
+    mode: '0755'
+- name: Generate configuration file
+  ansible.builtin.template:
+    src: env.j2
+    dest: "{{ install_dest }}/outpost/.env"
+    owner: "{{ default_owner }}"
+    group: "{{ default_group }}"
+    mode: '0755'
+  vars:
+    app_user: "{{ outpost_app_user }}"
+    app_pass: "{{ outpost_app_pass }}"
+    app_port: "{{ outpost_app_port }}"
+- name: Check if the image already exists
+  community.docker.docker_image_info:
+    name: "{{ item }}"
+  register: image_info
+  with_items: "{{ outpost_images }}"
+- name: Pull Image if not Exists
+  community.docker.docker_image:
+    name: "{{ item }}"
+    state: present
+    source: pull
+  when: image_info.results | selectattr('item', 'contains', item) | length > 0
+  with_items: "{{ outpost_images }}"
+- name: Tear down existing services
+  community.docker.docker_compose_v2:
+    project_src: "{{ install_dest }}/outpost"
+    state: absent
+- name: Start Outpost Service
+  community.docker.docker_compose_v2:
+    project_src: "{{ install_dest }}/outpost"
+  register: output
+- name: Show results
+  ansible.builtin.debug:
+    var: output
+- name: Wait for outpost containers
+  ansible.builtin.wait_for:
+    timeout: 60

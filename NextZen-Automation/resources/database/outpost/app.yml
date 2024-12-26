@@ -1,0 +1,9 @@
+---
+outpost_app_port: 8080
+outpost_app_image: semaphoreui/semaphore:v2.10.43
+outpost_db: semaphoredb
+outpost_db_data: db-data
+outpost_app_data: app-data
+outpost_app_config: app-config
+outpost_app_name: nextzen
+outpost_app_mail: smtp.nextzen@gmail.com

@@ -5,7 +5,7 @@
   remote_user: root
   roles:
     # - database
-    # - outpost
+    # - outpost-docker
     # - account-center
     # - nextweb
     - config
@@ -14,3 +14,4 @@
     - ../resources/common/default.yml
     - ../resources/common/docker.yml
     - ../resources/common/directory_structure.yml
+    - ../resources/database/outpost/app.yml

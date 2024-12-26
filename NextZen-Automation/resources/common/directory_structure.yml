@@ -44,3 +44,7 @@ directories:
       owner: nextzen
       group: nextzen   
       mode: "0750"
+    - path: database/tools
+      owner: nextzen
+      group: nextzen   
+      mode: "0750"

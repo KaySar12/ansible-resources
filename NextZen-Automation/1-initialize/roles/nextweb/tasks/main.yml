@@ -3,7 +3,7 @@
   become: true
   ansible.builtin.copy:
     src: "{{ resource_base_dir }}/docker/nextweb"
-    dest: "{{ database_dest }}"
+    dest: "{{ install_dest }}"
     owner: "{{ default_owner }}"
     group: "{{ default_group }}"
     mode: '0755'
@@ -31,12 +31,12 @@
 ##############################################################
 - name: Tear down existing services
   community.docker.docker_compose_v2:
-    project_src: "{{ database_dest }}/nextweb"
+    project_src: "{{ install_dest }}/nextweb"
     state: absent
 ##############################################################
 - name: Start NextWeb Services
   community.docker.docker_compose_v2:
-    project_src: "{{ database_dest }}/nextweb"
+    project_src: "{{ install_dest }}/nextweb"
   register: output
 ##############################################################
 - name: Show results

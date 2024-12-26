@@ -1,5 +1,6 @@
 ---
-database_dest: /home/nextzen
+install_dest: /home/nextzen
+database_dest: /home/nextzen/database
 default_owner: nextzen
 default_group: nextzen
 default_apps:
@@ -10,3 +11,11 @@ default_apps:
   - nextnas
   - nextzenos
   - nextfirewall
+apt_packages:
+  - acl
+  - lsof
+  - iputils
+  - htop
+  - duf
+tools:
+  lazydocker: https://github.com/jesseduffield/lazydocker/releases/download/v0.24.1/lazydocker_0.24.1_Linux_x86_64.tar.gz

@@ -1,17 +1,20 @@
 ---
+- name: Import Lazydocker Tasks
+  ansible.builtin.import_tasks: lazydocker.yml
 ###########################################################################
-- name: Install Access Control List
+- name: Necessary Package
   ansible.builtin.apt:
-    name: acl
+    name: "{{ item }}"
     state: present
     update_cache: true
+  loop: "{{ apt_packages }}"
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 ############################################################################
 - name: Initialize nextzen folder structure
   become: true
   ansible.builtin.copy:
     src: "{{ resource_base_dir }}/database"
-    dest: "{{ database_dest }}"
+    dest: "{{ install_dest }}"
     owner: "{{ default_owner }}"
     group: "{{ default_group }}"
     mode: '0644'
@@ -32,11 +35,10 @@
 #################################
 - name: Configure directory permission
   ansible.builtin.file:
-    path: "{{ database_dest }}/{{ item.path }}"
+    path: "{{ install_dest }}/{{ item.path }}"
     owner: "{{ item.owner }}"
     group: "{{ item.group }}"
     mode: "{{ item.mode }}"
     state: directory
     recurse: true
   with_items: "{{ directories }}"
-###############################################

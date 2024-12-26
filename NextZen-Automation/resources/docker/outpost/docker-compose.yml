@@ -1,11 +1,11 @@
 services:
     semaphore_db:
-        image: mysql:8
+        image: mariadb
         environment:
-            MYSQL_USER: ${MYSQL_USER:-user}
-            MYSQL_PASSWORD: ${MYSQL_PASSWORD:-password}
-            MYSQL_DATABASE: ${MYSQL_DB:-semaphore}
-            MYSQL_RANDOM_ROOT_PASSWORD: yes
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DB}
         volumes:
             - ${MYSQL_DATA:-./semaphore_mysql}:/var/lib/mysql   
         networks:
@@ -13,20 +13,23 @@ services:
     semaphore:
         ports:
             - ${APP_PORT:-80}:3000
-        image: ${APP_IMAGE:-semaphoreui/semaphore}:${APP_TAG:-v2.10.43}
+        image: ${APP_IMAGE:-semaphoreui/semaphore:v2.10.43}
+        depends_on:
+            - semaphore_db
+        restart: always
         environment:
             SEMAPHORE_DB_DIALECT: mysql
             SEMAPHORE_DB_HOST: semaphore_db
-            SEMAPHORE_DB_NAME: ${MYSQL_DB:-semaphore}
-            SEMAPHORE_DB_USER: ${MYSQL_USER:-user}
-            SEMAPHORE_DB_PASS: ${MYSQL_PASSWORD:-password}
+            SEMAPHORE_DB_NAME: ${MYSQL_DB}
+            SEMAPHORE_DB_USER: ${MYSQL_USER}
+            SEMAPHORE_DB_PASS: ${MYSQL_PASSWORD}
             SEMAPHORE_ADMIN: ${APP_USER:-admin}
-            SEMAPHORE_ADMIN_PASSWORD: ${APP_PASS:-password}
-            SEMAPHORE_ADMIN_NAME: ${APP_NAME:-admin}
-            SEMAPHORE_ADMIN_EMAIL: ${APP_MAIL:-admin@gmail.com}
+            SEMAPHORE_ADMIN_PASSWORD: ${APP_PASS}
+            SEMAPHORE_ADMIN_NAME: ${APP_NAME}
+            SEMAPHORE_ADMIN_EMAIL: ${APP_MAIL}
         volumes:
             - ${APP_DATA:-./semaphore_data}:/var/lib/semaphore
-            # - ${APP_CONF:-./semaphore_config}:/etc/semaphore     
+           # - ${APP_CONF:-./semaphore_config}:/etc/semaphore     
         networks:
             - semaphore_network
 volumes:

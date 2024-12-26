@@ -9,20 +9,17 @@
   become: true
   ansible.builtin.copy:
     src: "{{ resource_base_dir }}/docker/outpost"
-    dest: "{{ database_dest }}"
+    dest: "{{ install_dest }}"
     owner: "{{ default_owner }}"
     group: "{{ default_group }}"
     mode: '0755'
 - name: Generate configuration file
   ansible.builtin.template:
     src: env.j2
-    dest: "{{ database_dest }}/outpost/.env"
+    dest: "{{ install_dest }}/outpost/.env"
     owner: "{{ default_owner }}"
     group: "{{ default_group }}"
-    mode: '0640'
-  vars:
-    app_user: "{{ outpost_app_user }}"
-    app_pass: "{{ outpost_app_pass }}"
+    mode: '0755'
 - name: Check if the image already exists
   community.docker.docker_image_info:
     name: "{{ item }}"
@@ -37,12 +34,15 @@
   with_items: "{{ outpost_images }}"
 - name: Tear down existing services
   community.docker.docker_compose_v2:
-    project_src: "{{ database_dest }}/outpost"
+    project_src: "{{ install_dest }}/outpost"
     state: absent
 - name: Start Outpost Service
   community.docker.docker_compose_v2:
-    project_src: "{{ database_dest }}/outpost"
+    project_src: "{{ install_dest }}/outpost"
   register: output
 - name: Show results
   ansible.builtin.debug:
     var: output
+- name: Wait for outpost containers
+  ansible.builtin.wait_for:
+    timeout: 60
