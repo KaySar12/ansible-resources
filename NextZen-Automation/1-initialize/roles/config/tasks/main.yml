@@ -85,38 +85,38 @@
 #   loop: "{{ user_list.json }}"
 # - name: Import Mapping User and Project
 #   ansible.builtin.import_tasks: mapping.yml
-- name: Create user ID mapping
-  ansible.builtin.set_fact:
-    user_id_map: >-
-      {{
-        user_list.json | items2dict(key_name='name', value_name='id')
-      }}
 
-- name: Create project ID mapping
-  ansible.builtin.set_fact:
-    project_id_map: >-
-      {{
-        project_list.json | items2dict(key_name='name', value_name='id')
-      }}
+- name: Get User
+  ansible.builtin.debug:
+    var: user_list
 
-- name: Map user IDs to project IDs based on matching names
+- name: Get Project List
+  ansible.builtin.debug:
+    var: project_list
+- name: Combine projects with corresponding users
   ansible.builtin.set_fact:
-    mapped_users_projects: >-
-      {{
-        user_id_map | dict2items
-        | selectattr('value', 'in', project_id_map.values() | list)
-        | map('combine', {'user_id': attribute.value, 'project_id': project_id_map[attribute.key]})
-        | list
-      }}
+    projects_with_users: >-
+      {%- set results = [] -%}
+      {%- for project in project_list.json -%}
+      {%- for user in user_list.json if user.username == project.name -%}
+      {%- set _ = results.append({
+        "project": project,
+        "user": user
+      }) -%}
+      {%- endfor -%}
+      {%- endfor -%}
+      {{ results }}
+
 - name: Link Users With Projects
   ansible.builtin.uri:
-    url: "http://{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}:{{ outpost_app_port }}/api/project/{{ item['project']['id'] }}/users"
+    url: "http://{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}:{{ outpost_app_port }}/api/project/{{ item.project.id | int }}/users"
     method: POST
+    body: '{"user_id": {{ item.user.id | int }}, "role": "owner", "project_id": {{ item.project.id | int }}}'
     body_format: json
-    body:
-      user_id: "{{ item['user']['id'] }}"
-      role: owner
     headers:
       Cookie: "{{ login.cookies_string }}"
-    status_code: 204
-  loop: "{{ mapped_users_projects }}"
+    status_code: 204, 409
+  loop: "{{ projects_with_users }}"
+  ignore_errors: true
+  tags:
+    - skip_ansible_lint
