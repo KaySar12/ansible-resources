@@ -5,6 +5,19 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "bashdb",
+            "request": "launch",
+            "name": "Bash-Debug (hardcoded script name)",
+            "cwd": "${workspaceFolder}",
+            "terminalKind": "integrated",
+            "program": "${workspaceFolder}/NextZen-Automation/resources/database/scripts/update-json.sh",
+            "args": [
+                "/root/dev/Ansible/ansible-resources/NextZen-Automation/resources/database/scripts/test.json",
+                "Test",
+                "True"
+            ]
+        },
+        {
             "name": "Guide:Ansible Handlers",
             "type": "ansible",
             "request": "launch",

@@ -1,14 +1,4 @@
 ---
-- name: Import Lazydocker Tasks
-  ansible.builtin.import_tasks: lazydocker.yml
-###########################################################################
-- name: Necessary Package
-  ansible.builtin.apt:
-    name: "{{ item }}"
-    state: present
-    update_cache: true
-  loop: "{{ apt_packages }}"
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 ############################################################################
 - name: Initialize nextzen folder structure
   become: true

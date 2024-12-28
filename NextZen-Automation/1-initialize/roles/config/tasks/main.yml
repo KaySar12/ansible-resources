@@ -1,7 +1,7 @@
 ---
 - name: Login to outpost
   ansible.builtin.uri:
-    url: "http://{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}:{{ outpost_app_port }}/api/auth/login"
+    url: "http://{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}:{{ outpost_setup_config.port }}/api/auth/login"
     method: POST
     body_format: json
     body:
@@ -9,23 +9,26 @@
       password: "{{ outpost_app_pass }}"
     status_code: 204
   register: login
-- name: Get Cookie
-  ansible.builtin.debug:
-    var: "{{ login.cookies_string }}"
-- name: Get Host Ip
-  ansible.builtin.debug:
-    var: hostvars[inventory_hostname].ansible_default_ipv4.address
+# - name: Get Cookie
+#   ansible.builtin.debug:
+#     var: "{{ login.cookies_string }}"
+# - name: Get Host Ip
+#   ansible.builtin.debug:
+#     var: hostvars[inventory_hostname].ansible_default_ipv4.address
 - name: Get projects
   ansible.builtin.uri:
-    url: "http://{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}:{{ outpost_app_port }}/api/projects"
+    url: "http://{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}:{{ outpost_setup_config.port }}/api/projects"
     method: GET
     return_content: true
     headers:
       Cookie: "{{ login.cookies_string }}"
   register: project_list
+- name: Get projects list
+  ansible.builtin.debug:
+    var: project_list.json
 - name: Get users
   ansible.builtin.uri:
-    url: "http://{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}:{{ outpost_app_port }}/api/users"
+    url: "http://{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}:{{ outpost_setup_config.port }}/api/users"
     method: GET
     return_content: true
     headers:
@@ -33,7 +36,7 @@
   register: user_list
 - name: Create Projects
   ansible.builtin.uri:
-    url: "http://{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}:{{ outpost_app_port }}/api/projects"
+    url: "http://{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}:{{ outpost_setup_config.port }}/api/projects"
     method: POST
     body_format: json
     body:
@@ -56,7 +59,7 @@
 #   loop: "{{ project_list.json }}"
 - name: Create Users
   ansible.builtin.uri:
-    url: "http://{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}:{{ outpost_app_port }}/api/users"
+    url: "http://{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}:{{ outpost_setup_config.port }}/api/users"
     method: POST
     body_format: json
     body:
@@ -85,14 +88,6 @@
 #   loop: "{{ user_list.json }}"
 # - name: Import Mapping User and Project
 #   ansible.builtin.import_tasks: mapping.yml
-
-- name: Get User
-  ansible.builtin.debug:
-    var: user_list
-
-- name: Get Project List
-  ansible.builtin.debug:
-    var: project_list
 - name: Combine projects with corresponding users
   ansible.builtin.set_fact:
     projects_with_users: >-
@@ -106,10 +101,22 @@
       {%- endfor -%}
       {%- endfor -%}
       {{ results }}
-
+- name: Get User Link to Project
+  ansible.builtin.uri:
+    url: >
+      "http://{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}:
+      {{ outpost_setup_config.port }}/api/project/{{ item.id }}/users?sort=username&order=asc"
+    method: GET
+    return_content: true
+    headers:
+      Cookie: "{{ login.cookies_string }}"
+  tags:
+    - skip_ansible_lint
+  loop: "{{ project_list.json }}"
+  register: user_links
 - name: Link Users With Projects
   ansible.builtin.uri:
-    url: "http://{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}:{{ outpost_app_port }}/api/project/{{ item.project.id | int }}/users"
+    url: "http://{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}:{{ outpost_setup_config.port }}/api/project/{{ item.project.id | int }}/users"
     method: POST
     body: '{"user_id": {{ item.user.id | int }}, "role": "owner", "project_id": {{ item.project.id | int }}}'
     body_format: json

@@ -71,8 +71,8 @@
     name: "{{ item.container.Name | regex_replace('^/', '') }}"
   register: container_health
   until: container_health.container.State.Health.Status == 'healthy'
-  poll: 30
-  retries: 5
+  poll: 10
+  retries: 30
   loop: "{{ matching_containers }}"
   loop_control:
     label: "{{ item.container.Name | regex_replace('^/', '') }}"

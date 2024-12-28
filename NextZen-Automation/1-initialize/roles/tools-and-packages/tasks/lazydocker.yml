@@ -1,0 +1,35 @@
+---
+###########################################################################
+- name: Check if Lazydocker is already installed
+  ansible.builtin.stat:
+    path: /usr/local/bin/lazydocker
+  register: lazydocker_stat
+- name: Install Lazydocker only if it doesn't exist
+  when: not lazydocker_stat.stat.exists
+  block:
+    - name: Create install folder
+      ansible.builtin.file:
+        path: "{{ database_dest }}/downloads/lazydocker"
+        state: directory
+        owner: "{{ default_owner }}"
+        group: "{{ default_group }}"
+        mode: '0755'
+    - name: Download Lazydocker
+      ansible.builtin.get_url:
+        url: "{{ tools.lazydocker }}"
+        dest: "{{ database_dest }}/downloads/lazydocker/lazydocker.tar.gz"
+        mode: '0644'
+    - name: Extract Lazydocker
+      ansible.builtin.unarchive:
+        src: "{{ database_dest }}/downloads/lazydocker/lazydocker.tar.gz"
+        dest: "{{ database_dest }}/downloads/lazydocker"
+        remote_src: true
+    - name: Copy Lazydocker bin to /usr/local/bin
+      become: true
+      ansible.builtin.copy:
+        remote_src: true
+        src: "{{ database_dest }}/downloads/lazydocker/lazydocker"
+        dest: /usr/local/bin
+        owner: "{{ default_owner }}"
+        group: "{{ default_group }}"
+        mode: '0755'

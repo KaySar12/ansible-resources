@@ -1,5 +1,15 @@
 ---
-outpost_app_port: 8080
+outpost_source:
+  owner: semaphoreui
+  repo: semaphore
+outpost_setup_config:
+  email_alert: false
+  telegram_alert: false
+  slack_alert: false
+  rocketchat_alert: false
+  microsoft_teams_alert: false
+  ldap_enable: false
+  port: 8080
 outpost_app_image: semaphoreui/semaphore:v2.10.43
 outpost_db: semaphoredb
 outpost_db_data: db-data

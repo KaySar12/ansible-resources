@@ -1,52 +1,125 @@
 ---
-- name: Install Ansible (Debian/Ubuntu)
-  ansible.builtin.apt:
-    name: ansible
-    state: present
-    update_cache: true
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
-- name: Initialize outpost folder
-  become: true
-  ansible.builtin.copy:
-    src: "{{ resource_base_dir }}/docker/outpost"
-    dest: "{{ install_dest }}"
-    owner: "{{ default_owner }}"
-    group: "{{ default_group }}"
-    mode: '0755'
-- name: Generate configuration file
-  ansible.builtin.template:
-    src: env.j2
-    dest: "{{ install_dest }}/outpost/.env"
-    owner: "{{ default_owner }}"
-    group: "{{ default_group }}"
-    mode: '0755'
+- name: Get Latest outpost releases
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/{{ outpost_source.owner }}/{{ outpost_source.repo }}/releases/latest
+    method: GET
+    return_content: true
+    status_code: 200
+  register: response
+- name: Extract download URLs
+  ansible.builtin.set_fact:
+    download_urls: "{{ download_urls | default([]) + response.json.assets | map(attribute='browser_download_url') }}"
+- name: Get Architecture
+  ansible.builtin.set_fact:
+    architecture: "{{ 'amd64' if ansible_architecture == 'x86_64' else ansible_architecture }}"
+- name: Get download URLs
+  ansible.builtin.debug:
+    var: download_urls
+
+- name: Determine architecture-specific URL
   vars:
-    app_user: "{{ outpost_app_user }}"
-    app_pass: "{{ outpost_app_pass }}"
-    app_port: "{{ outpost_app_port }}"
-- name: Check if the image already exists
-  community.docker.docker_image_info:
-    name: "{{ item }}"
-  register: image_info
-  with_items: "{{ outpost_images }}"
-- name: Pull Image if not Exists
-  community.docker.docker_image:
-    name: "{{ item }}"
-    state: present
-    source: pull
-  when: image_info.results | selectattr('item', 'contains', item) | length > 0
-  with_items: "{{ outpost_images }}"
-- name: Tear down existing services
-  community.docker.docker_compose_v2:
-    project_src: "{{ install_dest }}/outpost"
+    my_pattern: "^.*linux_{{ architecture }}.tar.gz$"
+  ansible.builtin.set_fact:
+    arch_specific_url: >-
+      {%- set results = [] -%}
+      {%- for url in download_urls -%}
+        {%- if url | regex_search(my_pattern) -%}
+          {%- set _ = results.append(url) -%}
+        {%- endif -%}
+      {%- endfor -%}
+      {{ results[0] }}
+- name: Display architecture-specific URL
+  ansible.builtin.debug:
+    var: arch_specific_url
+- name: Create install folder
+  ansible.builtin.file:
+    path: "{{ database_dest }}/downloads/outpost"
+    state: directory
+    owner: "{{ default_owner }}"
+    group: "{{ default_group }}"
+    mode: '0755'
+- name: Download outpost
+  ansible.builtin.get_url:
+    url: "{{ arch_specific_url }}"
+    dest: "{{ database_dest }}/downloads/outpost/outpost.tar.gz"
+    mode: '0755'
+- name: Extract outpost
+  ansible.builtin.unarchive:
+    src: "{{ database_dest }}/downloads/outpost/outpost.tar.gz"
+    dest: "{{ database_dest }}/downloads/outpost"
+    mode: '0755'
+    remote_src: true
+- name: Remove archive
+  ansible.builtin.file:
+    path: "{{ install_dest }}/outpost.tar.gz"
     state: absent
-- name: Start Outpost Service
-  community.docker.docker_compose_v2:
-    project_src: "{{ install_dest }}/outpost"
+- name: Copy outpost to /usr/bin
+  ansible.builtin.copy:
+    src: "{{ database_dest }}/downloads/outpost/semaphore"
+    dest: "/usr/bin"
+    mode: '0755'
+    remote_src: true
+- name: Setup outpost
+  ansible.builtin.expect:
+    command: "semaphore setup"
+    timeout: 5
+    responses:
+      "What database to use:.*": "2\n"
+      "db filename.*": "{{ database_dest }}/outpost/database.boltdb\n"
+      "Playbook path.*": "{{ database_dest }}/template\n"
+      "Public URL.*": "http://{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}:{{ outpost_setup_config.port }}\n"
+      "Enable email alerts.*": "{{ 'no' if not outpost_setup_config.email_alert else 'yes' }}\n"
+      "Enable telegram alerts.*": "{{ 'no' if not outpost_setup_config.telegram_alert else 'yes' }}\n"
+      "Enable slack alerts.*": "{{ 'no' if not outpost_setup_config.slack_alert else 'yes' }}\n"
+      "Enable Rocket.Chat alerts.*": "{{ 'no' if not outpost_setup_config.rocketchat_alert else 'yes' }}\n"
+      "Enable Microsoft Team Channel alerts.*": "{{ 'no' if not outpost_setup_config.microsoft_teams_alert else 'yes' }}\n"
+      "Enable LDAP authentication.*": "{{ 'no' if not outpost_setup_config.ldap_enable else 'yes' }}\n"
+      "Config output directory.*": "{{ database_dest }}/outpost\n"
+      " > Username:.*": "{{ outpost_app_user }}\n"
+      " > Email:.*": "{{ outpost_app_mail }}\n"
+      " > Your name:.*": "{{ outpost_app_name }}\n"
+      " > Password:.*": "{{ outpost_app_pass }}\n"
   register: output
-- name: Show results
+- name: Display output
   ansible.builtin.debug:
     var: output
-- name: Wait for outpost containers
-  ansible.builtin.wait_for:
-    timeout: 60
+  register: json_file
+- name: Update or add key-value pair in JSON
+  ansible.builtin.command:
+    cmd: >-
+      {{ database_dest }}/scripts/update-json.sh
+        {{ database_dest }}/outpost/config.json
+        {{ item.0 }}
+        {% if item.0 == 'port' %}
+          \"'{{ item.1 | to_json }}'\"
+        {% else %}
+          '{{ item.1 }}'
+        {% endif %}
+  loop: "{{ outpost_setup_config.items()|list }}"
+  tags:
+    - skip_ansible_lint
+- name: Manage Outpost Service
+  block:
+    - name: Stop and disable existing outpost service
+      ansible.builtin.systemd_service:
+        name: outpost
+        state: stopped
+        daemon_reload: true
+        enabled: false
+      ignore_errors: true
+      tags:
+        - skip_ansible_lint
+
+    - name: Configure outpost service
+      ansible.builtin.template:
+        src: outpost.service.j2
+        dest: /etc/systemd/system/outpost.service
+        mode: '0755'
+      become: true
+
+    - name: Start and enable outpost service
+      ansible.builtin.systemd_service:
+        name: outpost
+        state: started
+        daemon_reload: true
+        enabled: true

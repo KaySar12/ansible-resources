@@ -1,0 +1,19 @@
+---
+- name: Import Lazydocker Tasks
+  ansible.builtin.import_tasks: lazydocker.yml
+###########################################################################
+- name: Necessary Package
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: true
+  loop: "{{ apt_packages }}"
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+- name: Install Ansible (Debian/Ubuntu)
+  ansible.builtin.apt:
+    name: ansible
+    state: present
+    update_cache: true
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'

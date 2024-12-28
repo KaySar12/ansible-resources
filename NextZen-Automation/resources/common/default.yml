@@ -14,8 +14,10 @@ default_apps:
 apt_packages:
   - acl
   - lsof
-  - iputils
+  - iputils-ping
   - htop
   - duf
+  - python3-pexpect 
+  - jq
 tools:
   lazydocker: https://github.com/jesseduffield/lazydocker/releases/download/v0.24.1/lazydocker_0.24.1_Linux_x86_64.tar.gz
