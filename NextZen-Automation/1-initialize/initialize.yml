@@ -4,12 +4,12 @@
   become: true
   remote_user: root
   roles:
-    - tools-and-packages
-    - database
+    # - tools-and-packages
+    # - database
     # - outpost-docker
-    - outpost-native
-    - account-center
-    - nextweb
+    # - outpost-native
+    # - account-center
+    # - nextweb
     - config
   vars_files:
     - roles/database/vars/user_and_groups.yml
