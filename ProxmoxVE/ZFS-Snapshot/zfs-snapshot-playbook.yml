@@ -26,3 +26,7 @@
           ZFS-Snapshot {{ dataset }} {{ retain }}
       tags:
         - skip_ansible_lint
+      register: output
+    - name: Display output
+      ansible.builtin.debug:
+        var: output
