@@ -12,7 +12,7 @@
         api_password: "{{ api_secret }}"
         api_host: "{{ api_host }}"
         storage: "{{ backup_storage }}"
-        mode: "{{ backup_mode }}"
+        mode: "{{ mode }}"
         compression_threads: "{{ cores }}"
         description: "{{ description }}"
         retention: "{{ backup_retention }}"
