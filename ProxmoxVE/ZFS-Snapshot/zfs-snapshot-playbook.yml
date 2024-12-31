@@ -1,5 +1,5 @@
 ---
-- name: Nextzen Automation Playbook
+- name: ZFS Snapshot Playbook
   hosts: all
   become: true
   remote_user: root
