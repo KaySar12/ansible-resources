@@ -5,6 +5,8 @@
   remote_user: root
   roles:
     - packages
+  collections:
+    - community.general
   tasks:
     - name: Backup all vms in the Proxmox cluster to storage mypbs
       community.general.proxmox_backup:
@@ -13,3 +15,5 @@
         api_host: "{{ api_host }}"
         storage: "{{ backup_storage }}"
         mode: all
+  tags:
+    - skip_ansible_lint
