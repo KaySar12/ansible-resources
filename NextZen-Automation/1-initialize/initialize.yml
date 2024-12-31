@@ -4,11 +4,11 @@
   become: true
   remote_user: root
   roles:
-    # - tools-and-packages
+    - tools-and-packages
     # - database
     # - outpost-docker
     # - outpost-native
-    - account-center
+    # - account-center
     # - nextweb
     # - config
   vars_files:

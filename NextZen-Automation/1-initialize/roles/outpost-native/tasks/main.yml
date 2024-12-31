@@ -51,7 +51,7 @@
     remote_src: true
 - name: Remove archive
   ansible.builtin.file:
-    path: "{{ install_dest }}/outpost.tar.gz"
+    path: "{{ database_dest }}/downloads/outpost/outpost.tar.gz"
     state: absent
 - name: Copy outpost to /usr/bin
   ansible.builtin.copy:

@@ -1,0 +1,18 @@
+---
+- name: Nextzen Automation Playbook
+  hosts: all
+  become: true
+  remote_user: root
+  tasks:
+    - name: Copy script to /usr/bin
+      ansible.builtin.copy:
+        src: "../resources/scripts/ZFS-Snapshot.sh"
+        dest: "/usr/bin"
+        mode: '0755'
+        remote_src: true
+    - name: Execute Snapshot
+      ansible.builtin.command:
+        cmd: >-
+          ZFS-Snapshot {{ dataset }} {{ retain }}
+      tags:
+        - skip_ansible_lint
