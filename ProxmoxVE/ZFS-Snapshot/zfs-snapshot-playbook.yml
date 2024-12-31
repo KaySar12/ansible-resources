@@ -16,7 +16,7 @@
         mode: '0755'
     - name: Get input Value
       ansible.builtin.debug:
-        msg: "Prepare to snapshot dataset: {{ dataset }} retain {{ retain }}"
+        msg: "Prepare to snapshot \nDataset: {{ dataset }} \nRetain: {{ retain }}"
     - name: Execute Snapshot
       ansible.builtin.command:
         cmd: >-
