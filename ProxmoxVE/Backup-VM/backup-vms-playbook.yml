@@ -5,8 +5,6 @@
   remote_user: root
   roles:
     - packages
-  collections:
-    - community.general
   tasks:
     - name: Backup all vms in the Proxmox cluster to storage mypbs
       community.general.proxmox_backup:
