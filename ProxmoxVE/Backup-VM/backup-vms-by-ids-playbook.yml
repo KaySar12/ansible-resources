@@ -12,13 +12,11 @@
         api_password: "{{ api_secret }}"
         api_host: "{{ api_host }}"
         storage: "{{ backup_storage }}"
-        mode: "{{ input_mode }}"
+        mode: include
         compression_threads: "{{ cores }}"
         description: "{{ description }}"
-        retention: "{{ backup_retention }}"
-        backup_mode: "{{ backup_mode }}"
-        vmids:
-          - 100163
+        backup_mode: snapshot
+        vmids: "{{ backup_ids }}"
       register: output
     - name: Display output
       ansible.builtin.debug:
