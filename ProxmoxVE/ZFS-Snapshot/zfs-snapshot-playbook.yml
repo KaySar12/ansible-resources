@@ -4,9 +4,14 @@
   become: true
   remote_user: root
   tasks:
+    - name: Install sshpass
+      ansible.builtin.apt:
+        name: sshpass
+        state: present
+        update_cache: true
     - name: Download script to /usr/bin
       ansible.builtin.get_url:
-        url: "https://raw.githubusercontent.com/KaySar12/ansible-resources/refs/heads/main/ProxmoxVE/resources/scripts/ZFS-Snapshot"
+        url: "{{ zfs_snapshot_script }}"
         dest: "/usr/bin"
         mode: '0755'
     - name: Execute Snapshot
