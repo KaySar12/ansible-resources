@@ -4,12 +4,11 @@
   become: true
   remote_user: root
   tasks:
-    - name: Copy script to /usr/bin
-      ansible.builtin.copy:
-        src: "../resources/scripts/ZFS-Snapshot.sh"
+    - name: Download script to /usr/bin
+      ansible.builtin.get_url:
+        url: "https://raw.githubusercontent.com/KaySar12/ansible-resources/refs/heads/main/ProxmoxVE/resources/scripts/ZFS-Snapshot"
         dest: "/usr/bin"
         mode: '0755'
-        remote_src: true
     - name: Execute Snapshot
       ansible.builtin.command:
         cmd: >-
