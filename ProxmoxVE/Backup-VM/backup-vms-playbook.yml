@@ -3,6 +3,8 @@
   hosts: all
   become: true
   remote_user: root
+  roles:
+    - packages
   tasks:
     - name: Backup all vms in the Proxmox cluster to storage mypbs
       community.general.proxmox_backup:
@@ -11,8 +13,3 @@
         api_host: "{{ api_host }}"
         storage: "{{ backup_storage }}"
         mode: all
-      vars:
-        api_user: root@pam
-        api_host: https://10.0.0.41:8006
-        backup_storage: mypbs
-        api_secret: a720e623-3fb7-48a5-97ae-74d4b653c197
