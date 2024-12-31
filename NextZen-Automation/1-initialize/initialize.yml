@@ -8,12 +8,13 @@
     # - database
     # - outpost-docker
     # - outpost-native
-    # - account-center
+    - account-center
     # - nextweb
-    - config
+    # - config
   vars_files:
     - roles/database/vars/user_and_groups.yml
     - ../resources/common/default.yml
     - ../resources/common/docker.yml
     - ../resources/common/directory_structure.yml
     - ../resources/database/outpost/app.yml
+    - ../resources/database/apps/AccountCenter/app.yml

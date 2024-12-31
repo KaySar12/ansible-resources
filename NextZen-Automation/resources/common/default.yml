@@ -1,6 +1,7 @@
 ---
 install_dest: /home/nextzen
 database_dest: /home/nextzen/database
+apps_dest: /home/nextzen/database/apps
 default_owner: nextzen
 default_group: nextzen
 default_apps:

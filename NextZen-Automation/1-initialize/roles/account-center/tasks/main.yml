@@ -8,6 +8,14 @@
     group: "{{ default_group }}"
     mode: '0755'
 ##############################################################
+- name: Generate configuration file
+  ansible.builtin.template:
+    src: env.j2
+    dest: "{{ install_dest }}/account-center/.env"
+    owner: "{{ default_owner }}"
+    group: "{{ default_group }}"
+    mode: '0755'
+##############################################################
 - name: Log into private registry and force re-authorization
   community.docker.docker_login:
     registry: hub.nextzenos.com

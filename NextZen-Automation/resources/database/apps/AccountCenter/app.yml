@@ -1,0 +1,14 @@
+---
+acc_image: hub.nextzenos.com/accountcenter/accountcenternextzen-official/account-center
+acc_tag: 1.0.1
+acc_server_container: account-center-server
+acc_worker_container: account-center-worker
+acc_email_host: smtp.nextzen@gmail.com
+acc_email_port: 465
+acc_email: shintheman12@gmail.com
+acc_email_from: shintheman12@gmail.com
+acc_email_tls: false
+acc_email_ssl: false
+acc_email_timeout: 10
+acc_http_port: 9000
+acc_https_port: 9443

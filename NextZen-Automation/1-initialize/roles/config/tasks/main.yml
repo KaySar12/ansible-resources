@@ -138,3 +138,20 @@
   ignore_errors: true
   tags:
     - skip_ansible_lint
+- name: User list
+  ansible.builtin.debug:
+    var: user_list
+- name: Create Access Token for each project
+  ansible.builtin.uri:
+    url: "http://{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}:{{ outpost_setup_config.port }}/api/user/tokens"
+    method: POST
+    body: '{"id": "string","created": "string","expired": false,"user_id": {{  item.id | int }}}'
+    body_format: json
+    headers:
+      Cookie: "{{ login.cookies_string }}"
+    status_code: 201, 409
+  loop: "{{ user_list.json }}"
+  register: token_list
+- name: Token List
+  ansible.builtin.debug:
+    var: token_list
