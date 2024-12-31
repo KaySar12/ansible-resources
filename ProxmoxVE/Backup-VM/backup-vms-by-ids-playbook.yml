@@ -1,0 +1,26 @@
+---
+- name: Backup Vm Playbook
+  hosts: all
+  become: true
+  remote_user: root
+  roles:
+    - packages
+  tasks:
+    - name: Backup all vms in the Proxmox cluster to storage mypbs
+      community.general.proxmox_backup:
+        api_user: "{{ api_user }}"
+        api_password: "{{ api_secret }}"
+        api_host: "{{ api_host }}"
+        storage: "{{ backup_storage }}"
+        mode: "{{ backup_mode }}"
+        compression_threads: "{{ cores }}"
+        description: "{{ description }}"
+        retention: "{{ backup_retention }}"
+        backup_mode: "{{ backup_mode }}"
+        vmids: "{{ backup_ids }}"
+      register: output
+    - name: Display output
+      ansible.builtin.debug:
+        var: output
+  tags:
+    - skip_ansible_lint
