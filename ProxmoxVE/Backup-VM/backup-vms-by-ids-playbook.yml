@@ -6,7 +6,7 @@
   roles:
     - packages
   tasks:
-    - name: Backup all vms in the Proxmox cluster to storage mypbs
+    - name: Backup VMIDS to storage
       community.general.proxmox_backup:
         api_user: "{{ api_user }}"
         api_password: "{{ api_secret }}"
