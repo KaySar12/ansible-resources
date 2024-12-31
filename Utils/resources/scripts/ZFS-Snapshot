@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Tên dataset
+DATASET="$1"
+RETAIN="$2"
+# Định dạng tên snapshot: dataset@autosnap-YYYY-MM-DD-HH:MM:SS
+SNAPSHOT_NAME="${DATASET}@autosnap-$(date +'%Y-%m-%d-%H:%M:%S')"
+# Tạo snapshot mới
+echo "Creating snapshot: $SNAPSHOT_NAME"
+if ! zfs snapshot "$SNAPSHOT_NAME"; then
+  echo "Error creating snapshot: $SNAPSHOT_NAME"
+  exit 1
+fi
+# Liệt kê tất cả snapshot có "autosnap" trong tên và sắp xếp theo thời gian tạo
+SNAPSHOTS=$(zfs list -t snapshot -o name,creation | grep "autosnap" | sort -k2)
+# Đếm số lượng snapshot
+SNAPSHOT_COUNT=$(echo "$SNAPSHOTS" | wc -l)
+# Xóa snapshot cũ nếu vượt quá giới hạn giữ lại
+if [ "$SNAPSHOT_COUNT" -gt "$RETAIN" ]; then
+  echo "Deleting old snapshots..."
+  SNAPSHOTS_TO_DELETE=$(echo "$SNAPSHOTS" | head -n -"$RETAIN" | cut -d' ' -f1)
+  for SNAP in $SNAPSHOTS_TO_DELETE; do
+    echo "Deleting snapshot: $SNAP"
+    if ! zfs destroy "$SNAP"; then
+      echo "Error deleting snapshot: $SNAP"
+    fi
+  done
+else
+  echo "No snapshots to delete. Total snapshots: $SNAPSHOT_COUNT"
+fi

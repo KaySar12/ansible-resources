@@ -1,0 +1,5 @@
+---
+api_user: root@pam
+api_host: 10.0.0.41:8006
+backup_storage: local-btrfs
+api_secret: Smartyourlife123@*

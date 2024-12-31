@@ -1,0 +1,11 @@
+---
+- name: Necessary Package
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: true
+  loop:
+    - python3-proxmoxer
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'

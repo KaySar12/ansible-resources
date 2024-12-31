@@ -1,0 +1,13 @@
+---
+- name: Sync file Between 2 Server
+  hosts: To
+  become: true
+  remote_user: root
+  roles:
+    - packages
+  tasks:
+    - name: Transfer file from ServerA to ServerB
+      ansible.posix.synchronize:
+        src: "{{ from_path }}"
+        dest: "{{ to_path }}"
+      delegate_to: From

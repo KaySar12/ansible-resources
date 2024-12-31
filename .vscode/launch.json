@@ -10,9 +10,9 @@
             "name": "Bash-Debug (hardcoded script name)",
             "cwd": "${workspaceFolder}",
             "terminalKind": "integrated",
-            "program": "${workspaceFolder}/NextZen-Automation/resources/database/scripts/update-json.sh",
+            "program": "${workspaceFolder}/NextZen_Automation/resources/database/scripts/update-json.sh",
             "args": [
-                "/root/dev/Ansible/ansible-resources/NextZen-Automation/resources/database/scripts/test.json",
+                "/root/dev/Ansible/ansible-resources/NextZen_Automation/resources/database/scripts/test.json",
                 "Test",
                 "True"
             ]

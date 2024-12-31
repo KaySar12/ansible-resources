@@ -1,4 +1,4 @@
-BASE_DIR=/root/dev/Ansible/ansible-resources/NextZen-Automation
+BASE_DIR=/root/dev/Ansible/ansible-resources/NextZen_Automation
 RESOURCES=resources
 INITIALIZE=1-initialize
 nextzen-initialize:
