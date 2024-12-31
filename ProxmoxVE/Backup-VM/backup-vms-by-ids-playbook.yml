@@ -17,7 +17,8 @@
         description: "{{ description }}"
         retention: "{{ backup_retention }}"
         backup_mode: "{{ backup_mode }}"
-        vmids: "{{ backup_ids }}"
+        vmids:
+          - 100163
       register: output
     - name: Display output
       ansible.builtin.debug:
